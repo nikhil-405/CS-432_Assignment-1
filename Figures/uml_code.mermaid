@@ -1,0 +1,126 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#ffffff',
+    'primaryTextColor': '#000000',
+    'lineColor': '#000000',
+    'secondaryColor': '#f4f4f4',
+    'tertiaryColor': '#ffffff',
+    'mainBkg': '#ffffff',
+    'nodeBorder': '#000000',
+    'classText': '#000000'
+  }
+} }%%
+classDiagram
+    class Organization {
+        +int OrganizationID
+        +string OrgName
+        +string OrgType
+        +string Address
+        +datetime CreatedAt
+        +createOrg()
+        +getMembers()
+    }
+
+    class User {
+        +int UserID
+        +string Name
+        +string Email
+        +string ContactNumber
+        +int Age
+        +string AccountStatus
+        +login()
+        +deactivate()
+    }
+
+    class Role {
+        +int RoleID
+        +string RoleName
+        +string Description
+        +getPermissions()
+    }
+
+    class Policy {
+        +int PolicyID
+        +string LevelName
+        +int MaxAllowedRoleID
+        +string Description
+        +isRoleAllowed(roleID)
+    }
+
+    class Document {
+        +int DocID
+        +string DocName
+        +int DocSize
+        +int NumberOfPages
+        +string FilePath
+        +string ConfidentialityLevel
+        +boolean IsPasswordProtected
+        +datetime CreatedAt
+        +datetime LastModifiedAt
+        +upload()
+        +archive()
+        +verifyAccess(userID)
+    }
+
+    class Permission {
+        +int PermissionID
+        +string AccessType
+        +datetime GrantedAt
+        +revoke()
+    }
+
+    class Version {
+        +int VersionID
+        +int VersionNumber
+        +datetime ModifiedAt
+        +string ChangeSummary
+        +rollback()
+    }
+
+    class Password {
+        +int ProtectionID
+        +string PasswordHash
+        +string EncryptionMethod
+        +datetime LastUpdatedAt
+        +validateHash()
+    }
+
+    class Log {
+        +int LogID
+        +string ActionType
+        +datetime ActionTimestamp
+        +string IPAddress
+        +exportAuditTrail()
+    }
+
+    class Tag {
+        +int TagID
+        +string TagName
+        +string TagCategory
+    }
+
+    class Document_Tag {
+        +int DocID
+        +int TagID
+        +int OrgID
+    }
+
+    %% Relationships and Multiplicity
+    Organization "1" -- "*" User : Employs
+    Organization "1" -- "*" Document : Hosts
+    Role "1" -- "*" User : Assigned to
+    Role "1" -- "*" Policy : Access Limit
+    Policy "1" -- "*" Document : Classifies
+    User "1" -- "*" Document : Owns
+    
+    Document "1" *-- "0..1" Password : Secures
+    Document "1" *-- "*" Version : Tracks
+    Document "1" *-- "*" Permission : Governs
+    
+    User "1" -- "*" Log : Triggers
+    Document "1" -- "*" Log : Records
+    
+    Document "1" -- "*" Document_Tag : Categorized by
+    Tag "1" -- "*" Document_Tag : Labels
+    User "1" -- "*" Version : Authors
