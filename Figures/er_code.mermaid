@@ -1,0 +1,141 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: '#ffffff'
+    primaryTextColor: '#000000'
+    lineColor: '#000000'
+    mainBkg: '#ffffff'
+    nodeBorder: '#000000'
+    clusterBkg: '#ffffff'
+    clusterBorder: '#000000'
+    fontFamily: 'arial'
+    fontSize: '13px'
+    padding: 15
+---
+flowchart LR
+    %% --- ZONES (Subgraphs for Layout) ---
+    subgraph Zone1 [Definitions]
+        direction TB
+        Role["<b>Role</b><br/><u>RoleID</u><br/>RoleName<br/>Desc"]
+        Policy["<b>Policy</b><br/><u>PolicyID</u><br/>LevelName<br/>Desc"]
+        Tag["<b>Tag</b><br/><u>TagID</u><br/>TagName<br/>Category"]
+    end
+
+    subgraph Zone2 [Core Actors]
+        direction TB
+        Org["<b>Organization</b><br/><u>OrgID</u><br/>Name<br/>Type<br/>Address"]
+        User["<b>User</b><br/><u>UserID</u><br/>Name<br/>Email<br/>Contact"]
+    end
+
+    subgraph Zone3 [Documents & Junctions]
+        direction TB
+        Doc["<b>Document</b><br/><u>DocID</u><br/>Name<br/>Size<br/>Path"]
+        DocTag["<b>Document_Tag</b><br/>(Junction)<br/><u>DocID, TagID</u>"]
+        Perm["<b>Permission</b><br/><u>PermID</u><br/>AccessType<br/>GrantedAt"]
+    end
+
+    subgraph Zone4 [Weak Entities & Logs]
+        direction TB
+        Log["<b>Log</b><br/><u>LogID</u><br/>Action<br/>Time<br/>IP"]
+        Ver[["<b>Version</b><br/><u>VerID</u><br/>VerNum<br/>Summary"]]
+        Pass[["<b>Password</b><br/><u>ProtID</u><br/>Hash<br/>Method"]]
+    end
+
+    %% --- RELATIONSHIPS (Diamonds) ---
+    R_Def{Defines}
+    R_Assign{Assigned}
+    R_Emp{Employs}
+    R_Class{Classifies}
+    R_Own{Owns}
+    R_Create{Created By}
+    R_Gov{Governs}
+    R_Hold{Holds}
+    R_Rec{Records}
+    R_Trig{Triggers}
+    
+    %% M:N Decomposition Relationships
+    R_HasTag{Has Tag}
+    R_TaggedIn{Tagged In}
+
+    %% Identifying (Double Border)
+    R_Hist{{History}}
+    R_Auth{{Authors}}
+    R_Sec{{Secures}}
+
+    %% --- CONNECTIONS ---
+    %% ARROWS (-->) point to the ONE side (Rectangle)
+    %% LINES (---) connect to the MANY side
+    %% DOUBLE LINES (===) denote TOTAL PARTICIPATION for Weak Entities
+
+    %% 1. Role & Policy
+    User ---|M| R_Assign -->|1| Role
+    Policy ---|M| R_Def -->|1| Role
+
+    %% 2. Organization
+    User ---|M| R_Emp -->|1| Org
+    Doc ---|M| R_Own -->|1| Org
+
+    %% 3. User & Doc Creation
+    Doc ---|M| R_Create -->|1| User
+    Doc ---|M| R_Class -->|1| Policy
+
+    %% 4. Permissions
+    Perm ---|M| R_Hold -->|1| User
+    Perm ---|M| R_Gov -->|1| Doc
+
+    %% 5. Logs
+    Log ---|M| R_Trig -->|1| User
+    Log ---|M| R_Rec -->|1| Doc
+
+    %% 6. Weak Entities (Double Lines === for Total Participation)
+    %% Version MUST belong to a Document and Author
+    Ver ===|M| R_Auth -->|1| User
+    Ver ===|M| R_Hist -->|1| Doc
+    
+    %% Password MUST belong to a Document
+    Pass ===|1| R_Sec -->|1| Doc
+
+    %% 7. Document Tags (The Junction Table with N notation)
+    %% Doc -(1)---< Has Tag >---(M)- DocTag -(N)---< Tagged In >---(1)- Tag
+    DocTag ---|M| R_HasTag -->|1| Doc
+    DocTag ---|N| R_TaggedIn -->|1| Tag
+
+    %% --- STYLING ---
+    style Zone1 fill:#fff,stroke:#333,stroke-dasharray: 5 5
+    style Zone2 fill:#fff,stroke:#333,stroke-dasharray: 5 5
+    style Zone3 fill:#fff,stroke:#333,stroke-dasharray: 5 5
+    style Zone4 fill:#fff,stroke:#333,stroke-dasharray: 5 5
+
+    style Org fill:#fff,stroke:#000,stroke-width:2px
+    style User fill:#fff,stroke:#000,stroke-width:2px
+    style Role fill:#fff,stroke:#000,stroke-width:2px
+    style Policy fill:#fff,stroke:#000,stroke-width:2px
+    style Doc fill:#fff,stroke:#000,stroke-width:2px
+    style Perm fill:#fff,stroke:#000,stroke-width:2px
+    style Log fill:#fff,stroke:#000,stroke-width:2px
+    style Tag fill:#fff,stroke:#000,stroke-width:2px
+    style DocTag fill:#fff,stroke:#000,stroke-width:2px
+
+    %% Weak Entities (Double Border)
+    style Ver fill:#fff,stroke:#000,stroke-width:4px
+    style Pass fill:#fff,stroke:#000,stroke-width:4px
+
+    %% Identifying Relationships (Double Border)
+    style R_Hist fill:#fff,stroke:#000,stroke-width:3px
+    style R_Auth fill:#fff,stroke:#000,stroke-width:3px
+    style R_Sec fill:#fff,stroke:#000,stroke-width:3px
+
+    %% Regular Diamonds
+    style R_Def fill:#fff,stroke:#000
+    style R_Assign fill:#fff,stroke:#000
+    style R_Emp fill:#fff,stroke:#000
+    style R_Class fill:#fff,stroke:#000
+    style R_Own fill:#fff,stroke:#000
+    style R_Create fill:#fff,stroke:#000
+    style R_Gov fill:#fff,stroke:#000
+    style R_Hold fill:#fff,stroke:#000
+    style R_Rec fill:#fff,stroke:#000
+    style R_Trig fill:#fff,stroke:#000
+    style R_HasTag fill:#fff,stroke:#000
+    style R_TaggedIn fill:#fff,stroke:#000
