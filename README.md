@@ -30,8 +30,12 @@ This methodology ensured a smooth transition from conceptual design to logical d
 ## 2. Methodology
 
 To obtain the data, we used a Python script [data_generation.py] that generated Pandas dataframes, which were then converted into SQL tables. Later, additional definitions, such as primary key, not null, etc., were manually added in MySQL Workbench for added safety. For creating the diagrams, we used the Mermaid platform, which converts code into high-definition flowcharts. The codes for the main ER Diagram and the UML diagram have been provided in the [/Figures] section. All the high-definition figures have been provided in the [/Figures] folder. We have considered making some function-wise UML diagrams, which also illustrate the inner workings. 
-[Figures/SafeDocs_main_UML.png]
 
+Main UML
+![UML](Figures/SafeDocs_main_UML.png)
+
+Main ER
+![ER](Figures/SafeDocs_ER_Diagram.png)
 
 ---
 
